@@ -1,79 +1,116 @@
-# Product Manager
+# Product Manager – Android App
 
-A simple Android app to manage a list of products. Products are stored in Firebase Firestore, so the data stays after the app is closed.
+A simple Android application for managing products and tracking inventory. Product data is stored in Firebase Cloud Firestore, so it remains available even after closing and reopening the application.
 
 ## Features
 
-- Add, edit and delete products (delete asks for confirmation)
-- Each product has a name, cost and quantity (10 – 100); the total price is calculated automatically
-- Sort by name or price, ascending or descending
-- Summary at the bottom with total products and total price
-- Input validation with error messages
-- Loading, empty and error states
-- Add / update / delete only work when the phone is online (10 second timeout); the list still shows the last loaded data when offline
+- Add, edit and delete products, with a confirmation dialog before deletion.
+- Each product has a name, cost and quantity (between 10 and 100).
+- Automatically calculates the total price (`cost × quantity`).
+- Sort products by name or price in ascending or descending order.
+- Displays a summary of the total number of products and their combined value.
+- Validates user input and displays relevant error messages.
+- Handles loading, empty and error states.
+- Add, update and delete operations require an internet connection and have a 10-second timeout.
+- Previously loaded product data remains visible when the device is offline.
 
-## Tech stack
+## Tech Stack
 
-- Kotlin
-- Jetpack Compose (Material 3)
-- Hilt for dependency injection
-- Coroutines + StateFlow
-- Firebase Firestore
+- **Language:** Kotlin
+- **UI:** Jetpack Compose with Material 3
+- **Architecture:** MVVM with a layered architecture
+- **Dependency Injection:** Hilt
+- **Asynchronous Operations:** Kotlin Coroutines and StateFlow
+- **Backend:** Firebase Cloud Firestore
 
-## Project structure
+## Project Structure
 
-```
+```text
 com.practice.trialapp
-├── ProductManagementApp.kt        // Hilt application class
+├── ProductManagementApp.kt
 ├── MainActivity.kt
 ├── di/
-│   ├── FirebaseModule.kt          // provides Firestore
-│   ├── RepositoryModule.kt        // binds the repository
-│   └── DispatcherModule.kt        // IO / Default dispatchers
+│   ├── FirebaseModule.kt
+│   ├── RepositoryModule.kt
+│   └── DispatcherModule.kt
 ├── data/
-│   ├── remote/FirestoreDataSource.kt
-│   ├── mapper/ProductMapper.kt
-│   └── repository/ProductRepositoryImpl.kt
+│   ├── remote/
+│   │   └── FirestoreDataSource.kt
+│   ├── mapper/
+│   │   └── ProductMapper.kt
+│   └── repository/
+│       └── ProductRepositoryImpl.kt
 ├── domain/
-│   ├── model/Product.kt
-│   └── repository/ProductRepository.kt
-├── presentation/product/
-│   ├── ProductListScreen.kt
-│   ├── ProductListViewModel.kt
-│   ├── ProductUiState.kt
-│   └── components/
-│       ├── ProductItem.kt
-│       ├── AddEditProductDialog.kt
-│       ├── ProductSummary.kt
-│       └── SortDropdown.kt
-└── ui/theme/                      // colors, shapes, typography
+│   ├── model/
+│   │   └── Product.kt
+│   └── repository/
+│       └── ProductRepository.kt
+├── presentation/
+│   └── product/
+│       ├── ProductListScreen.kt
+│       ├── ProductListViewModel.kt
+│       ├── ProductUiState.kt
+│       └── components/
+│           ├── ProductItem.kt
+│           ├── AddEditProductDialog.kt
+│           ├── ProductSummary.kt
+│           └── SortDropdown.kt
+└── ui/
+    └── theme/
 ```
 
-Data flows like this: **Firestore → DataSource → Repository → ViewModel (StateFlow) → Compose UI**.
-Firestore calls, mapping and sorting run on background threads; only the UI runs on the main thread.
+## Architecture
 
-## Firestore
+The application follows a layered architecture that separates UI components, business logic and data operations.
 
-Products are saved in the `products` collection with auto-generated document IDs:
+Data flows through the following layers:
 
-| Field      | Type   |
-|------------|--------|
-| `name`     | string |
-| `cost`     | number |
-| `quantity` | number |
+**Firestore → DataSource → Repository → ViewModel (StateFlow) → Compose UI**
 
-The total price is not stored, it is calculated in the app (`cost × quantity`).
+- **Presentation:** Jetpack Compose screens and ViewModels manage the UI and its state.
+- **Domain:** Contains the Product model and repository interface.
+- **Data:** Handles Firestore operations, data mapping and repository implementation.
+- **DI:** Hilt provides dependencies throughout the application.
 
-## Setup
+## Firebase Firestore
 
-1. Clone the project and open it in Android Studio.
-2. Create a Firebase project and add an Android app with package name `com.practice.trialapp`.
-3. Download `google-services.json` and put it in the `app/` folder.
-4. Enable **Cloud Firestore** in the Firebase console.
-5. Run the app on a device or emulator (min SDK 30).
+Product information is stored in a Firestore collection named `products`.
 
-Build from the command line:
+Each product is stored as a separate document with an automatically generated document ID.
 
-```
-./gradlew assembleDebug
-```
+| Field | Type |
+|---|---|
+| `name` | String |
+| `cost` | Number |
+| `quantity` | Number |
+
+The total price is calculated within the application (`cost × quantity`) and is not stored in Firestore.
+
+## Getting Started
+
+### Prerequisites
+
+- Android Studio
+- JDK 17
+- Android device or emulator
+- Internet connection
+
+### Setup
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Muskan125/Product-Management-App.git
+   ```
+
+2. Open the project in Android Studio.
+3. Wait for Gradle sync to complete.
+4. The repository includes the Firebase configuration file (`google-services.json`) inside the `app/` directory.
+5. The application is configured to use the associated Firebase project and its Cloud Firestore database.
+6. Run the application on an Android device or emulator.
+
+**Package name:** `com.practice.trialapp`
+
+**Minimum SDK:** 30
+
+
